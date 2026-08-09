@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+status=""
+seperator=" "
+
+
+updatestatus() {
+    status=""
+    status+=" $(uname -r)"
+    status+="${seperator}"
+    status+=" $(uptime -p | sed 's/up //;s/ minute/m/;s/ hour/h/;s/ day/d/;s/s//g;s/,//g')"
+    status+="${seperator}"
+    status+="󰍛 $(free -h --mega | awk '/Mem/ {print $3}' | sed 's/i//g')"
+    status+="${seperator}"
+    status+=" $(df -H | grep nvme0n1p2 | awk '{print $4}')"
+    status+="${seperator}"
+    status+=" $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}' | cut -c3-)%"
+    status+="${seperator}"
+    status+=" $(cat /sys/class/power_supply/BAT0/capacity)%"
+    status+="${seperator}"
+    status+="󰥔 $(date +"%a, %b %d %H:%M")"
+}
+
+# Initialize status
+main() {
+	while pgrep dwl > /dev/null; do
+	    updatestatus
+	    echo -e "${status}"
+	    sleep 1
+	done
+}
+main

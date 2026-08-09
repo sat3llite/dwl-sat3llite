@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+TMPFILE="/tmp/restart_dwl"
+
+do=true
+while $do ||  [ -f "$TMPFILE" ]; do
+    do=false
+    rm "$TMPFILE"
+    dwl-status | dwl
+done
+
+
