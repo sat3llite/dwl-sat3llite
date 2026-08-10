@@ -64,6 +64,7 @@ static char *tags[] = { " ", " ", " ", " ", " ", " ", " ", 
 /* logging */
 static int log_level = WLR_ERROR;
 
+/* Environment Variables */
 static const Env envs[] = {
         /* variable		  value */
         { "XDG_CURRENT_DESKTOP",  "wlroots" },
@@ -134,7 +135,7 @@ static const struct xkb_rule_names xkb_rules = {
 	/* example:
 	.options = "ctrl:nocaps",
 	*/
-    .layout = "us,gr",
+	.layout = "us,gr",
 	.options = "grp:alt_shift_toggle,ctrl:nocaps",
 };
 
