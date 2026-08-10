@@ -21,7 +21,7 @@ static const int user_bh                   = 26; /* 0 means that dwl will calcul
 static const int showbar                   = 1; /* 0 means no bar */
 static const int topbar                    = 1; /* 0 means bottom bar */
 /* #define MAIN_FONT "Ubuntu Nerd Font:size=11:weight=bold:antialias=true:hinting=true" */
-#define MAIN_FONT "Mononoki Nerd Font:size=12:weight=bold:antialias=true:hinting=true"
+#define MAIN_FONT "GoogleSansCode Nerd Font:size=12:weight=bold:antialias=true:hinting=true"
 static const char *fonts[]                 = {
   MAIN_FONT,
   "FontAwesome:size=12:antialias=true:hinting=true"
