@@ -27,22 +27,22 @@ The user can configure dwl via editing the config.h configuration file. Shall th
 
 * Patches
 + alwayscenter.patch - Automatically center floating windows.
-+ autostart-0.7.patch - Allow dwl to execute commands from autostart array in your config.h file.
-+ bar-0.7.patch - Add a bar identical to dwm's bar.
-+ barcolors.patch - Add support for colored status text to the bar.
-+ barheight.patch - Adds the ability to change the bar's height.
++ autostart-0.8.patch - Allow dwl to execute commands from autostart array in your config.h file.
++ bar.patch - Add a bar identical to dwm's bar.
 + bar-systray-0.7.patch - Add a system tray to the bar.
 + column.patch - A column layout patch.
 + cursortheme.patch - Adds ability to change cursor's theme and size.
-+ en-keycodes.patch - Always use the English keymap to get keycodes, so key bindings work even when using a non-English keyboard layout.
-+ foreign-toplevel-management.patch - Implement foreign-toplevel-management.
++ decklayout.patch - Deck is a dwl layout which is inspired by the dwm Deck layout (which is inspired by TTWM window manager).
++ dwindle.patch - Adds a dwindle (fibonacci-style) layout to dwl.
++ en-keycodes-0.8.patch - Always use the English keymap to get keycodes, so key bindings work even when using a non-English keyboard layout.
++ foreign-toplevel-management.patch - Implement foreign-toplevel-management protocol.
 + gaplessgrid.patch - Arranges windows in a grid.
 + gaps.patch - Adds gaps between clients 
 + keyboardshortcutsinhibit.patch - Allows clients to use the keyboard-shortcuts-inhibit protocol to block the compositor from using keybinds.
 + modes.patch - Implement modes (This DWL fork uses it for Keychord functionality)
 + nextlayout.patch - Change the current layout to the next available one.
 + setupenv.patch - Allow configuring environment variables in config.h
-+ swallow.patch - This patch adds "window swallowing" to dwl.
++ swallow-0.8.patch - This patch adds "window swallowing" to dwl.
 
 * Main Features
 ** Autostart
