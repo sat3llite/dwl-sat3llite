@@ -2,13 +2,13 @@
 
 [[./screenshot.png]]
 
-*This is my heavily patched DWL fork.* The patches aim to turn dwl into a more complete desktop experience. It is currently based on dwl v0.7.\\
+*This is my heavily patched DWL fork.* The patches aim to turn dwl into a more complete desktop experience. It is currently based on dwl v0.8.\\
 Upstream: https://codeberg.org/dwl/dwl
 
 * Depedencies
 Arch Linux:
 #+begin_example
-paru -S base-devel wayland wayland-protocols libinput libdrm wlroots0.18 pixman fcft tllist xorg-xwayland egl-wayland ttf-mononoki-nerd
+paru -S base-devel wayland wayland-protocols libinput libdrm wlroots0.18 pixman fcft tllist xorg-xwayland egl-wayland ttf-mononoki-nerd dbus
 #+end_example
 
 * Installing dwl
