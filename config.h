@@ -1,3 +1,9 @@
+/* ____    _  _____ _____  Sat3llite's DWL Configuration
+* / ___|  / \|_   _|___ /  (config.h)
+* \___ \ / _ \ | |   |_ \  https://github.com/sat3llite/dwl-sat3llite
+*  ___) / ___ \| |  ___) |
+* |____/_/   \_\_| |____/
+*/
 /* Taken from https://github.com/djpohly/dwl/issues/466 */
 #define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
                         ((hex >> 16) & 0xFF) / 255.0f, \
@@ -9,6 +15,7 @@ static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will
 static const int smartgaps                 = 1;  /* 1 means no outer gap when there is only one window */
 static int gaps                            = 1;  /* 1 means gaps between windows are added */
 static const unsigned int gappx            = 10; /* gap pixel between windows */
+static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
 static const unsigned int systrayspacing   = 2; /* systray spacing */
 static const int user_bh                   = 26; /* Bar height: 0 uses automatic font height + 2, or set a fixed height in pixels (e.g. 24, 26, 30, 32) */
@@ -16,7 +23,6 @@ static const int showsystray               = 1; /* 0 means no systray */
 static const int showbar                   = 1; /* 0 means no bar */
 static const int topbar                    = 1; /* 0 means bottom bar */
 static const float rootcolor[]             = COLOR(0x000000ff);
-/* #define MAIN_FONT "Ubuntu Nerd Font:size=11:weight=bold:antialias=true:hinting=true" */
 #define MAIN_FONT "Mononoki Nerd Font:size=12:weight=bold:antialias=true:hinting=true"
 static const char *fonts[]                 = {
   MAIN_FONT,
@@ -43,7 +49,7 @@ static float swallowborder = 1.0f; /* add this multiplied by borderpx to border 
 * tomorrownight.h
 */
 
-#include "colors/gruvbox.h"
+#include "colors/doom-one.h"
 
 enum {
     EMACS,
@@ -57,6 +63,7 @@ const char *modes_labels[] = {
 };
 
 /* tagging */
+/* Uncomment one style for tags */
 //static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 //static char *tags[] = { "dev", "www", "sys", "doc", "vbox", "chat", "mus", "vid", "gfx" };
 static char *tags[] = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
@@ -68,10 +75,11 @@ static int log_level = WLR_ERROR;
 static const char *const autostart[] = {
         "dbus-update-activation-environment", "--systemd", "DISPLAY", "WAYLAND_DISPLAY", "SWAYSOCK", "XDG_CURRENT_DESKTOP", NULL,
         "dex", "-a", "-s", "~/.config/autostart/", NULL,
-        "/opt/rofi-scripts/bin/wallpaper-rofi", "-R", NULL,
-        "bash", "~/.local/bin/idle-wl", NULL,
+        "dunst", "--config", "~/.config/dunst/dunstrc-doomone", NULL,
+        "/opt/rofi-scripts/bin/wallpaper-rofi", "-s", NULL,
+        "bash", "-c", "~/.local/bin/idle-wl", NULL,
         "wl-paste", "-t", "text", "--watch", "clipman", "store", "--no-persist", NULL,
-        "xrdb", "-load", "/home/john/.Xresources", NULL,
+        "sh", "-c", "xrdb -merge ~/.Xresources", NULL,
         "gsettings", "set", "org.gnome.desktop.wm.preferences", "button-layout", "", NULL,
         NULL /* terminate */
 };
@@ -109,6 +117,7 @@ static const Layout layouts[] = {
 	{ "||",       col },
 	{ "[\\]",     dwindle },
 	{ "[E]",      deck },
+	{ "|M|",      centeredmaster },
 	{ NULL,       NULL }, /* terminate */
 };
 
@@ -195,18 +204,17 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 /* commands */
 static const char *termcmd[] = { "alacritty", NULL };
 static const char *menucmd[] = { "mew-run", "-i", "-h", "26", "-fn", MAIN_FONT, NULL };
-static const char *dmenucmd[] = { "mew", "-i", "-fn", MAIN_FONT, NULL };
+static const char *dmenucmd[] = { "mew", "-i", "-h", "26", "-l", "10", "-fn", MAIN_FONT, NULL };
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: 2 -> at, etc. */
 	/* modifier                  key                  function          argument */
 	{ MODKEY,                    XKB_KEY_Return,     spawn,          {.v = termcmd} },
 	{ MODKEY,                    XKB_KEY_b,          spawn,          SHCMD("xdg-open https://") },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_B,          spawn,          SHCMD("env GDK_BACKEND=x11 surf") },
 	{ MODKEY,                    XKB_KEY_e,          entermode,      { .i=EMACS } },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_P,          entermode,      { .i=VM } },
 	{ MODKEY,                    XKB_KEY_p,          entermode,      { .i=ROFI } },
-	{ MODKEY,                    XKB_KEY_v,          spawn,          SHCMD("clipman pick -t rofi") },
+	{ MODKEY,                    XKB_KEY_v,          spawn,          SHCMD("clipman pick -t CUSTOM -T 'mew -i -h 26 -l 20 -b'") },
 	{ WLR_MODIFIER_ALT,          XKB_KEY_Tab,        spawn,          SHCMD("rofi -show window") },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_R,          spawn,          SHCMD("bash -c 'touch /tmp/restart_dwl; pkill dwl'") },
 	
@@ -224,28 +232,31 @@ static const Key keys[] = {
 	{ 0,                         XKB_KEY_XF86AudioPlay,          spawn,        SHCMD("playerctl play-pause") },
 	{ 0,                         XKB_KEY_XF86AudioPrev,          spawn,        SHCMD("playerctl previous") },
 
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_b,           togglebar,        {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_B,           togglebar,        {0} },
 	{ MODKEY,                    XKB_KEY_j,           focusstack,       {.i = +1} },
 	{ MODKEY,                    XKB_KEY_k,           focusstack,       {.i = -1} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_J,           movestack,        {.i = +1} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_K,           movestack,        {.i = -1} },
 	{ MODKEY,                    XKB_KEY_i,           incnmaster,       {.i = +1} },
 	{ MODKEY,                    XKB_KEY_d,           incnmaster,       {.i = -1} },
 	{ MODKEY,                    XKB_KEY_h,           setmfact,         {.f = -0.05f} },
 	{ MODKEY,                    XKB_KEY_l,           setmfact,         {.f = +0.05f} },
-	{ MODKEY,                    XKB_KEY_Return,      zoom,             {0} },
-	{ MODKEY,                    XKB_KEY_Tab,         view,             {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,      zoom,             {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Tab,         view,             {0} },
 	{ MODKEY,                    XKB_KEY_q,           killclient,       {0} },
 	{ MODKEY,                    XKB_KEY_t,           setlayout,        {.v = &layouts[0]} },
-	{ MODKEY,                    XKB_KEY_f,           setlayout,        {.v = &layouts[1]} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_F,           setlayout,        {.v = &layouts[1]} },
 	{ MODKEY,                    XKB_KEY_m,           setlayout,        {.v = &layouts[2]} },
 	{ MODKEY,                    XKB_KEY_c,           setlayout,        {.v = &layouts[3]} },
 	{ MODKEY,                    XKB_KEY_a,           setlayout,        {.v = &layouts[4]} },
 	{ MODKEY,                    XKB_KEY_r,           setlayout,        {.v = &layouts[5]} },
 	{ MODKEY,                    XKB_KEY_g,           setlayout,        {.v = &layouts[6]} },
-	{ MODKEY,                    XKB_KEY_n,           nextlayout,       {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_g,           togglegaps,       {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,           setlayout,        {.v = &layouts[7]} },
+	{ MODKEY,                    XKB_KEY_Tab,         nextlayout,       {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_G,           togglegaps,       {0} },
 	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
-	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
+	{ MODKEY,                    XKB_KEY_s,           togglefloating,   {0} },
+	{ MODKEY,                    XKB_KEY_f,           togglefullscreen, {0} },
 	{ MODKEY,                    XKB_KEY_a,           toggleswallow,    {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_A,           toggleautoswallow,{0} },
 	{ MODKEY,                    XKB_KEY_0,           view,             {.ui = ~0} },
@@ -279,28 +290,28 @@ static const Modekey modekeys[] = {
 	/* mode      modifier                  key                 function        argument */
 
     /* Emacs */
-	{ EMACS, { 0, XKB_KEY_b, spawn, SHCMD("emacsclient -c --eval '(ibuffer)'") } },
+	{ EMACS, { 0, XKB_KEY_b, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(ibuffer)'") } },
 	{ EMACS, { 0, XKB_KEY_b, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_c, spawn, SHCMD("emacsclient -c ~/.config/emacs/config.org") } },
+	{ EMACS, { 0, XKB_KEY_c, spawn, SHCMD("emacsclient -c -a 'emacs'~/.config/emacs/config.org") } },
 	{ EMACS, { 0, XKB_KEY_c, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_d, spawn, SHCMD("emacsclient -c --eval '(dired nil)'") } },
+	{ EMACS, { 0, XKB_KEY_d, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(dired nil)'") } },
 	{ EMACS, { 0, XKB_KEY_d, entermode, {.i = NORMAL} } },
 
 	{ EMACS, { 0, XKB_KEY_e, spawn, SHCMD("emacsclient -c -a 'emacs'") } },
 	{ EMACS, { 0, XKB_KEY_e, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_f, spawn, SHCMD("emacsclient -c --eval '(elfeed)'") } },
+	{ EMACS, { 0, XKB_KEY_f, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(elfeed)'") } },
 	{ EMACS, { 0, XKB_KEY_f, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_r, spawn, SHCMD("emacsclient -cF '((visibility . nil))' -e '(my/emacs-counsel-launcher)'") } },
+	{ EMACS, { 0, XKB_KEY_r, spawn, SHCMD("emacsclient -cF '((visibility . nil))' -a 'emacs' -e '(my/emacs-counsel-launcher)'") } },
 	{ EMACS, { 0, XKB_KEY_r, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_s, spawn, SHCMD("emacsclient -c --eval '(eshell)'") } },
+	{ EMACS, { 0, XKB_KEY_s, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(eshell)'") } },
 	{ EMACS, { 0, XKB_KEY_s, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_t, spawn, SHCMD("emacsclient -c --eval '(ghostel)'") } },
+	{ EMACS, { 0, XKB_KEY_t, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(ghostel)'") } },
 	{ EMACS, { 0, XKB_KEY_t, entermode, {.i = NORMAL} } },
 
 	{ EMACS, { 0, XKB_KEY_F4, spawn, SHCMD("killall emacs && emacs --daemon && dunstify 'Emacs Started'") } },
@@ -309,7 +320,13 @@ static const Modekey modekeys[] = {
 	{ EMACS, { 0, XKB_KEY_Escape, entermode, {.i = NORMAL} } },
 
 
-    /* Rofi */
+	/* Rofi */
+	{ ROFI, { 0, XKB_KEY_a, spawn, SHCMD("archwiki-rofi -d") } },
+	{ ROFI, { 0, XKB_KEY_a, entermode, {.i = NORMAL} } },
+
+	{ ROFI, { 0, XKB_KEY_b, spawn, SHCMD("ppd-rofi -d") } },
+	{ ROFI, { 0, XKB_KEY_b, entermode, {.i = NORMAL} } },
+
 	{ ROFI, { 0, XKB_KEY_c, spawn, SHCMD("configs-rofi -d") } },
 	{ ROFI, { 0, XKB_KEY_c, entermode, {.i = NORMAL} } },
 

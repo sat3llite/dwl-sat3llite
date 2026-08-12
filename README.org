@@ -26,23 +26,27 @@ The correct way of launching this dwl fork is by through a login manager (GDM, S
 The user can configure dwl via editing the config.h configuration file. Shall the user patch this build with a patch from [[https://codeberg.org/dwl/dwl-patches][dwl-patches]] (or elsewhere) they must migrate the code changes from config.def.h to config.h
 
 * Patches
-+ alwayscenter.patch - Automatically center floating windows.
-+ autostart-0.8.patch - Allow dwl to execute commands from autostart array in your config.h file.
-+ bar.patch - Add a bar identical to dwm's bar.
-+ bar-systray-0.7.patch - Add a system tray to the bar.
-+ column.patch - A column layout patch.
-+ cursortheme.patch - Adds ability to change cursor's theme and size.
-+ decklayout.patch - Deck is a dwl layout which is inspired by the dwm Deck layout (which is inspired by TTWM window manager).
-+ dwindle.patch - Adds a dwindle (fibonacci-style) layout to dwl.
-+ en-keycodes-0.8.patch - Always use the English keymap to get keycodes, so key bindings work even when using a non-English keyboard layout.
-+ foreign-toplevel-management.patch - Implement foreign-toplevel-management protocol.
-+ gaplessgrid.patch - Arranges windows in a grid.
-+ gaps.patch - Adds gaps between clients 
-+ keyboardshortcutsinhibit.patch - Allows clients to use the keyboard-shortcuts-inhibit protocol to block the compositor from using keybinds.
-+ modes.patch - Implement modes (This DWL fork uses it for Keychord functionality)
-+ nextlayout.patch - Change the current layout to the next available one.
-+ setupenv.patch - Allow configuring environment variables in config.h
-+ swallow-0.8.patch - This patch adds "window swallowing" to dwl.
+- alwayscenter.patch - Automatically center floating windows.
+- autostart-0.8.patch - Allow dwl to execute commands from autostart array in your config.h file.
+- bar.patch - Add a bar identical to dwm's bar.
+- bar-systray-0.7.patch - Add a system tray to the bar.
+- centeredmaster-0.8.patch - centeredmaster centers the nmaster area on screen.
+- column.patch - A column layout patch.
+- cursortheme.patch - Adds ability to change cursor's theme and size.
+- decklayout.patch - Deck is a dwl layout which is inspired by the dwm Deck layout (which is inspired by TTWM window manager).
+- dwindle.patch - Adds a dwindle (fibonacci-style) layout to dwl.
+- en-keycodes-0.8.patch - Always use the English keymap to get keycodes, so key bindings work even when using a non-English keyboard layout.
+- foreign-toplevel-management.patch - Implement foreign-toplevel-management protocol.
+- gaplessgrid.patch - Arranges windows in a grid.
+- gaps.patch - Adds gaps between clients.
+- keyboardshortcutsinhibit.patch - Allows clients to use the keyboard-shortcuts-inhibit protocol to block the compositor from using keybinds.
+- modes.patch - Implement modes (This DWL fork uses it for Keychord functionality).
+- movestack-0.8.patch - Allows you to move a window up and down the stack.
+- nextlayout.patch - Change the current layout to the next available one.
+- pointer-gestures-unstable-v1.patch - Forward the following events to client: swipe_begin, swipe_update, swipe_end, pinch_begin, pinch_update and pinch_end.
+- setupenv.patch - Allow configuring environment variables in config.h.
+- snail-0.8.patch - This layout is a scalable alternative to the "tile" and "spiral" layouts, optimized for wide monitors.
+- swallow-0.8.patch - This patch adds "window swallowing" to dwl.
 
 * Main Features
 ** Autostart
