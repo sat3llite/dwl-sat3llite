@@ -13,21 +13,25 @@
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
 static const int smartgaps                 = 1;  /* 1 means no outer gap when there is only one window */
-static int gaps                            = 1;  /* 1 means gaps between windows are added */
+static int gaps                            = 0;  /* 1 means gaps between windows are added */
 static const unsigned int gappx            = 10; /* gap pixel between windows */
 static const int centeredmaster_always     = 0;  /* always center even if only 1 window */
-static const unsigned int borderpx         = 1;  /* border pixel of windows */
+static const unsigned int borderpx         = 2;  /* border pixel of windows */
 static const unsigned int systrayspacing   = 2; /* systray spacing */
 static const int user_bh                   = 26; /* Bar height: 0 uses automatic font height + 2, or set a fixed height in pixels (e.g. 24, 26, 30, 32) */
 static const int showsystray               = 1; /* 0 means no systray */
 static const int showbar                   = 1; /* 0 means no bar */
 static const int topbar                    = 1; /* 0 means bottom bar */
-static const float rootcolor[]             = COLOR(0x000000ff);
-#define MAIN_FONT "Mononoki Nerd Font:size=12:weight=bold:antialias=true:hinting=true"
+static const char ptagf[]                  = "[%s %s]"; /* format of a tag label with a client */
+static const char etagf[]                  = "[%s]"; /* format of an empty (vacant but selected) tag */
+static const int taglabels                 = 1; /* 0 = plain numeric tags (stock dwl look), 1 = [N appid] labels */
+static const int hidevacanttags            = 1; /* 0 = always show all tags, 1 = hide unoccupied/unselected tags */
+#define MAIN_FONT "MesloLGS Nerd Font:size=12:weight=regular:antialias=true:hinting=true"
 static const char *fonts[]                 = {
   MAIN_FONT,
-  "FontAwesome:size=12:antialias=true:hinting=true"
+  "JoyPixels:size=12:antialias=true:hinting=true"
 };
+static const float rootcolor[]             = COLOR(0x000000ff);
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
 static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You can also use glsl colors */
 static const char *cursor_theme            = "aosp-cursors";
@@ -49,7 +53,7 @@ static float swallowborder = 1.0f; /* add this multiplied by borderpx to border 
 * tomorrownight.h
 */
 
-#include "colors/doom-one.h"
+#include "colors/nord.h"
 
 enum {
     EMACS,
@@ -64,19 +68,20 @@ const char *modes_labels[] = {
 
 /* tagging */
 /* Uncomment one style for tags */
-//static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+//static char *tags[] = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX" };
+static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 //static char *tags[] = { "dev", "www", "sys", "doc", "vbox", "chat", "mus", "vid", "gfx" };
-static char *tags[] = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
+//static char *tags[] = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
 
 /* logging */
 static int log_level = WLR_ERROR;
 
 /* Autostart */
 static const char *const autostart[] = {
-        "dbus-update-activation-environment", "--systemd", "DISPLAY", "WAYLAND_DISPLAY", "SWAYSOCK", "XDG_CURRENT_DESKTOP", NULL,
+        "dbus-update-activation-environment", "--systemd", "DISPLAY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP=wlroots", NULL,
         "dex", "-a", "-s", "~/.config/autostart/", NULL,
         "dunst", "--config", "~/.config/dunst/dunstrc-doomone", NULL,
-        "/opt/rofi-scripts/bin/wallpaper-rofi", "-s", NULL,
+        "/opt/rofi-scripts/bin/wallpaper-rofi", "-R", NULL,
         "bash", "-c", "~/.local/bin/idle-wl", NULL,
         "wl-paste", "-t", "text", "--watch", "clipman", "store", "--no-persist", NULL,
         "sh", "-c", "xrdb -merge ~/.Xresources", NULL,
@@ -223,7 +228,7 @@ static const Key keys[] = {
 	{ 0,                         XKB_KEY_XF86AudioRaiseVolume,   spawn,        SHCMD("volume-notify up") },
 	{ 0,                         XKB_KEY_XF86AudioMicMute,       spawn,        SHCMD("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") },
 	{ 0,                         XKB_KEY_XF86MonBrightnessUp,    spawn,        SHCMD("brightnessctl set +5%") },
-	{ 0,                         XKB_KEY_XF86MonBrightnessUp,    spawn,        SHCMD("brightnessctl set 5%-") },
+	{ 0,                         XKB_KEY_XF86MonBrightnessDown,  spawn,        SHCMD("brightnessctl set 5%-") },
 	{ 0,                         XKB_KEY_Print,                  spawn,        SHCMD("screenshot-rofi -d") },
 
 	/* Media Controls */
@@ -314,7 +319,7 @@ static const Modekey modekeys[] = {
 	{ EMACS, { 0, XKB_KEY_t, spawn, SHCMD("emacsclient -c -a 'emacs' --eval '(ghostel)'") } },
 	{ EMACS, { 0, XKB_KEY_t, entermode, {.i = NORMAL} } },
 
-	{ EMACS, { 0, XKB_KEY_F4, spawn, SHCMD("killall emacs && emacs --daemon && dunstify 'Emacs Started'") } },
+	{ EMACS, { 0, XKB_KEY_F4, spawn, SHCMD("sh -c 'killall emacs; emacs --daemon && dunstify \'Emacs Started\''") } },
 	{ EMACS, { 0, XKB_KEY_F4, entermode, {.i = NORMAL} } },
 
 	{ EMACS, { 0, XKB_KEY_Escape, entermode, {.i = NORMAL} } },

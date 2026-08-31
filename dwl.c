@@ -587,6 +587,8 @@ static size_t autostart_len;
 /* attempt to encapsulate suck into one file */
 #include "client.h"
 
+static uint32_t tagw[LENGTH(tags)];
+
 /* function implementations */
 void
 applybounds(Client *c, struct wlr_box *bbox)
@@ -868,7 +870,7 @@ bufrelease(struct wl_listener *listener, void *data)
 void
 buttonpress(struct wl_listener *listener, void *data)
 {
-	unsigned int i = 0, x = 0, ti = 0;
+	unsigned int i = 0, x = 0, occ = 0, ti = 0;
 	double cx, tx = 0;
 	unsigned int click;
 	struct wlr_pointer_button_event *event = data;
@@ -900,10 +902,17 @@ buttonpress(struct wl_listener *listener, void *data)
 			(buffer = wlr_scene_buffer_from_node(node)) && buffer == selmon->scene_buffer) {
 			cx = (cursor->x - selmon->m.x) * selmon->wlr_output->scale;
 			traywidth = tray_get_width(selmon->tray);
-
-			do
-				x += TEXTW(selmon, tags[i]);
-			while (cx >= x && ++i < LENGTH(tags));
+			wl_list_for_each(c, &clients, link) {
+				if (c->mon != selmon)
+					continue;
+				occ |= c->tags;
+			}
+			do {
+				/* do not reserve space for vacant tags */
+				if (hidevacanttags && !(occ & 1 << i || selmon->tagset[selmon->seltags] & 1 << i))
+					continue;
+				x += tagw[i];
+			} while (cx >= x && ++i < LENGTH(tags));
 			if (i < LENGTH(tags)) {
 				click = ClkTagBar;
 				arg.ui = 1 << i;
@@ -1967,6 +1976,8 @@ drawbar(Monitor *m)
 	uint32_t i, occ = 0, urg = 0;
 	Client *c;
 	Buffer *buf;
+	char tagdisp[64];
+	const char *mastername[LENGTH(tags)];
 
 	if (!m->scene_buffer->node.enabled)
 		return;
@@ -1982,20 +1993,39 @@ drawbar(Monitor *m)
 		drwl_text(m->drw, m->b.width - (tw + traywidth), 0, tw, m->b.height, 0, stext, 0);
 	}
 
+	for (i = 0; i < LENGTH(tags); i++)
+		mastername[i] = NULL;
+
 	wl_list_for_each(c, &clients, link) {
 		if (c->mon != m)
 			continue;
 		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
+		for (i = 0; i < LENGTH(tags); i++)
+			if (!mastername[i] && c->tags & (1 << i))
+				mastername[i] = client_get_appid(c);
 	}
 	x = 0;
 	c = focustop(m);
 	for (i = 0; i < LENGTH(tags); i++) {
-		w = TEXTW(m, tags[i]);
+		/* do not draw vacant tags */
+		if (hidevacanttags && !(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
+			continue;
+
+		if (taglabels) {
+			if (mastername[i])
+				snprintf(tagdisp, sizeof tagdisp, ptagf, tags[i], mastername[i]);
+			else
+				snprintf(tagdisp, sizeof tagdisp, etagf, tags[i]);
+		} else {
+			snprintf(tagdisp, sizeof tagdisp, "%s", tags[i]);
+		}
+
+		w = tagw[i] = TEXTW(m, tagdisp);
 		drwl_setscheme(m->drw, colors[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drwl_text(m->drw, x, 0, w, m->b.height, m->lrpad / 2, tags[i], urg & 1 << i);
-		if (occ & 1 << i)
+		drwl_text(m->drw, x, 0, w, m->b.height, m->lrpad / 2, tagdisp, urg & 1 << i);
+		if (!taglabels && (occ & 1 << i))
 			drwl_rect(m->drw, x + boxs, boxs, boxw, boxw,
 				m == selmon && c && c->tags & 1 << i,
 				urg & 1 << i);

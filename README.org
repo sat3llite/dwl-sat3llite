@@ -1,14 +1,20 @@
 * dwl - dwm for Wayland
 
 [[./screenshot.png]]
+(dwl might look different from the screenshot above as I tend to switch my config a lot.)
 
 *This is my heavily patched DWL fork.* The patches aim to turn dwl into a more complete desktop experience. It is currently based on dwl v0.8.\\
 Upstream: https://codeberg.org/dwl/dwl
 
-* Depedencies
+* Dependencies
 Arch Linux:
 #+begin_example
-paru -S base-devel wayland wayland-protocols libinput libdrm wlroots0.18 pixman fcft tllist xorg-xwayland egl-wayland ttf-mononoki-nerd dbus
+paru -S base-devel wayland wayland-protocols libinput libdrm wlroots0.18 pixman fcft tllist xorg-xwayland egl-wayland ttf-mononoki-nerd otf-font-awesome dbus
+#+end_example
+
+Debian Sid:
+#+begin_example
+sudo apt install wayland-protocols libwayland-dev libdbus-1-dev libinput-dev libdrm-dev libwlroots-0.19-dev fonts-font-awesome
 #+end_example
 
 * Installing dwl
@@ -20,7 +26,7 @@ sudo make install
 This installs dwl, man pages and desktop entries on /usr/local and the dwl-session startup script.
 
 * Running dwl
-The correct way of launching this dwl fork is by through a login manager (GDM, SDDM, LightDM, Plasma Login Manager, Ly etc.) or from a tty with the =dwl-session= script. This script allows the user to reload dwl by pressing Super + Shift + R.
+The correct way of launching this dwl fork is by through a login manager (GDM, SDDM, LightDM, Plasma Login Manager, Ly etc.) or from a tty with the =dwl-session= script. This script allows the user to reload dwl by pressing Super + Shift + R. \\
 
 * Configuring dwl
 The user can configure dwl via editing the config.h configuration file. Shall the user patch this build with a patch from [[https://codeberg.org/dwl/dwl-patches][dwl-patches]] (or elsewhere) they must migrate the code changes from config.def.h to config.h
@@ -47,6 +53,7 @@ The user can configure dwl via editing the config.h configuration file. Shall th
 - setupenv.patch - Allow configuring environment variables in config.h.
 - snail-0.8.patch - This layout is a scalable alternative to the "tile" and "spiral" layouts, optimized for wide monitors.
 - swallow-0.8.patch - This patch adds "window swallowing" to dwl.
+- taglabels+hide_vacant_tags.path - A port of the dwm taglabels+hide_vacant_tags patch that Claude built for me.
 
 * Main Features
 ** Autostart
@@ -54,13 +61,15 @@ This dwl build offers autostart capabilities. The user can add commands to be ex
 ** Bar status
 The bar status is the content on the left of the bar. By default it shows the kernel version, uptime, ram usage, available disk space, volume, battery level and time & date. \\
 The user however can change it by editing the =dwl-status= script. 
-** Customizability
+** Customization
 - Inside the =colors/= folder there is a number of color schemes the user can switch between by editing the =#include colors/doom-one.h= line to point to the preferred colorscheme file:
+  + Black
   + Catppuccin Macchiato
   + Catppuccin Mocha
   + Doom One
   + Dracula
-  + Dwm (The default dwm/dwl color scheme)
+  + Dwl (The default dwm/dwl color scheme)
+  + Everforest
   + Gruvbox
   + Nord
   + Palenight
