@@ -1,4 +1,4 @@
-/* dwl bar with the default dwm colors */
+/* A Black (#000000) colorscheme for the DWL Bar.  */
 
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */

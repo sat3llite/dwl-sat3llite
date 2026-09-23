@@ -1,4 +1,4 @@
-/* DWL Bar with the Tomorrow Night colorscheme */
+/* DWL Bar with the Gruvbox colorscheme */
 /* Don't bother with any errors */
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */

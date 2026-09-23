@@ -1,4 +1,5 @@
-/* dwl bar with the default dwm colors */
+/* DWL Bar with the default dwm/dwl colors */
+/* Don't bother with any errors */
 
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */

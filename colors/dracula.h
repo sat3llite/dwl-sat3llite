@@ -1,3 +1,5 @@
+/* DWL Bar with the Dracula colorscheme */
+/* Don't bother with any errors */
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */
 	[SchemeNorm] = { 0xf8f8f2ff, 0x282a36ff, 0x282a36ff },

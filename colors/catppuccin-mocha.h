@@ -1,4 +1,4 @@
-/* DWL Bar with Catppuccin colorscheme */
+/* DWL Bar with Catppuccin Mocha colorscheme */
 /* Don't bother with any errors */
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */

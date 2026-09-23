@@ -5,7 +5,7 @@ TMPFILE="/tmp/restart_dwl"
 do=true
 while $do ||  [ -f "$TMPFILE" ]; do
     do=false
-    rm "$TMPFILE"
+    rm "$TMPFILE" 2>/dev/null
     dwl-status | dwl
 done
 
