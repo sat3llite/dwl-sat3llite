@@ -4,36 +4,24 @@
 include config.mk
 
 # flags for compiling
-DWLCPPFLAGS = -I. -I/usr/include/wlroots-0.18 -I/usr/include/pixman-1 -DWLR_USE_UNSTABLE -D_POSIX_C_SOURCE=200809L \
-	-DVERSION=\"$(VERSION)\" $(XWAYLAND)
+DWLCPPFLAGS = -I. -DWLR_USE_UNSTABLE -D_POSIX_C_SOURCE=200809L \
+	-DVERSION=\"$(VERSION)\" $(XWAYLAND) $(CPPFLAGS)
 DWLDEVCFLAGS = -g -Wpedantic -Wall -Wextra -Wdeclaration-after-statement \
 	-Wno-unused-parameter -Wshadow -Wunused-macros -Werror=strict-prototypes \
 	-Werror=implicit -Werror=return-type -Werror=incompatible-pointer-types \
 	-Wfloat-conversion
 
 # CFLAGS / LDFLAGS
-PKGS      = wayland-server xkbcommon libinput pixman-1 fcft $(XLIBS) dbus-1
+PKGS      = wayland-server xkbcommon libinput $(XLIBS)
 DWLCFLAGS = `$(PKG_CONFIG) --cflags $(PKGS)` $(WLR_INCS) $(DWLCPPFLAGS) $(DWLDEVCFLAGS) $(CFLAGS)
 LDLIBS    = `$(PKG_CONFIG) --libs $(PKGS)` $(WLR_LIBS) -lm $(LIBS)
 
-TRAYOBJS = systray/watcher.o systray/tray.o systray/item.o systray/icon.o systray/menu.o systray/helpers.o
-TRAYDEPS = systray/watcher.h systray/tray.h systray/item.h systray/icon.h systray/menu.h systray/helpers.h
-
 all: dwl
-dwl: dwl.o util.o dbus.o $(TRAYOBJS) $(TRAYDEPS)
-	$(CC) dwl.o util.o dbus.o $(TRAYOBJS) $(DWLCFLAGS) $(LDFLAGS) $(LDLIBS) -o $@
-dwl.o: dwl.c client.h dbus.h config.h config.mk cursor-shape-v1-protocol.h \
+dwl: dwl.c client.h config.h ime.h util.h config.mk cursor-shape-v1-protocol.h \
+	ext-image-copy-capture-v1-protocol.h \
 	pointer-constraints-unstable-v1-protocol.h wlr-layer-shell-unstable-v1-protocol.h \
-	wlr-output-power-management-unstable-v1-protocol.h xdg-shell-protocol.h wlr-foreign-toplevel-management-unstable-v1-protocol.h\
-	$(TRAYDEPS)
-util.o: util.c util.h
-dbus.o: dbus.c dbus.h
-systray/watcher.o: systray/watcher.c $(TRAYDEPS)
-systray/tray.o: systray/tray.c $(TRAYDEPS)
-systray/item.o: systray/item.c $(TRAYDEPS)
-systray/icon.o: systray/icon.c $(TRAYDEPS)
-systray/menu.o: systray/menu.c $(TRAYDEPS)
-systray/helpers.o: systray/helpers.c $(TRAYDEPS)
+	wlr-output-power-management-unstable-v1-protocol.h xdg-shell-protocol.h
+	$(CC) dwl.c $(DWLCFLAGS) $(LDFLAGS) $(LDLIBS) -o $@
 
 # wayland-scanner is a tool which generates C headers and rigging for Wayland
 # protocols, which are specified in XML. wlroots requires you to rig these up
@@ -44,6 +32,9 @@ WAYLAND_PROTOCOLS = `$(PKG_CONFIG) --variable=pkgdatadir wayland-protocols`
 cursor-shape-v1-protocol.h:
 	$(WAYLAND_SCANNER) enum-header \
 		$(WAYLAND_PROTOCOLS)/staging/cursor-shape/cursor-shape-v1.xml $@
+ext-image-copy-capture-v1-protocol.h:
+	$(WAYLAND_SCANNER) enum-header \
+		$(WAYLAND_PROTOCOLS)/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml $@
 pointer-constraints-unstable-v1-protocol.h:
 	$(WAYLAND_SCANNER) enum-header \
 		$(WAYLAND_PROTOCOLS)/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml $@
@@ -56,19 +47,16 @@ wlr-output-power-management-unstable-v1-protocol.h:
 xdg-shell-protocol.h:
 	$(WAYLAND_SCANNER) server-header \
 		$(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
-wlr-foreign-toplevel-management-unstable-v1-protocol.h:
-	$(WAYLAND_SCANNER) server-header \
-		protocols/wlr-foreign-toplevel-management-unstable-v1.xml $@
 
 config.h:
 	cp config.def.h $@
 clean:
-	rm -f dwl *.o *-protocol.h systray/*.o
+	rm -f dwl *.o *-protocol.h
 
 dist: clean
 	mkdir -p dwl-$(VERSION)
 	cp -R LICENSE* Makefile CHANGELOG.md README.md client.h config.def.h \
-		config.mk protocols dwl.1 dwl.c util.c util.h dwl.desktop \
+		config.mk protocols dwl.1 dwl.c ime.h util.h dwl.desktop \
 		dwl-$(VERSION)
 	tar -caf dwl-$(VERSION).tar.gz dwl-$(VERSION)
 	rm -rf dwl-$(VERSION)
@@ -84,14 +72,6 @@ install: dwl
 	mkdir -p $(DESTDIR)$(DATADIR)/wayland-sessions
 	cp -f dwl.desktop $(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
 	chmod 644 $(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
-	cp -f dwl-session $(DESTDIR)$(PREFIX)/bin
-	chmod 755 $(DESTDIR)$(PREFIX)/bin/dwl-session
-	cp -f dwl-status $(DESTDIR)$(PREFIX)/bin
-	chmod 755 $(DESTDIR)$(PREFIX)/bin/dwl-status
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/dwl $(DESTDIR)$(PREFIX)/bin/dwl-status $(DESTDIR)$(PREFIX)/bin/dwl-session $(DESTDIR)$(MANDIR)/man1/dwl.1 \
+	rm -f $(DESTDIR)$(PREFIX)/bin/dwl $(DESTDIR)$(MANDIR)/man1/dwl.1 \
 		$(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
-
-.SUFFIXES: .c .o
-.c.o:
-	$(CC) $(CPPFLAGS) $(DWLCFLAGS) -o $@ -c $<
